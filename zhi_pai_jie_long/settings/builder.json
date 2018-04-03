@@ -28,5 +28,10 @@
     "appid": "wxded1d4003d281ec8",
     "orientation": "portrait"
   },
-  "xxteaKey": "1a4ee281-404c-48"
+  "xxteaKey": "1a4ee281-404c-48",
+  "zipCompressJs": true,
+  "qqplay": {
+    "orientation": "portrait"
+  },
+  "fb-instant-games": {}
 }

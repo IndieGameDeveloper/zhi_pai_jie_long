@@ -6,6 +6,10 @@ cc.Class({
             default: null,
             type: cc.Label
         },
+        valueImg: {
+            default: null,
+            type: cc.Sprite
+        },
         spade: {
             default: [],
             type: cc.Node
@@ -43,7 +47,20 @@ cc.Class({
                 }
             }
         }
+        this.value.node.active = false;
+        this.valueImg.node.active = false;
         this.value.string = this.cardData.value;
+        if (this.cardData.value == 1 || this.cardData.value > 10) {
+            this.valueImg.node.active = true;
+            var imgColor = (this.cardData.kind == CardKind.spade || this.cardData.kind == CardKind.club) ? 0 : 1;
+            var path = cc.url.raw('resources/poker_digit_' + imgColor + '_' + this.cardData.value + '.png');
+            var texture = cc.textureCache.addImage(path);
+            this.valueImg.spriteFrame.setTexture(texture);
+            console.log('ssss ' + path);
+        } else {
+            this.value.node.active = true;
+        }
+
         this.bg.active = !this.cardData.isSee;
         if (this.cardData.kind == CardKind.heart || this.cardData.kind == CardKind.diamond) {
             this.value.node.color = new cc.Color(255, 0, 0);

@@ -69,6 +69,9 @@ class PlayerCardsManager {
         card.isSee = false;
         this.allCards.ordering[i].push(card);
         this.playerCards.splice(randomIndex, 1);
+
+        // card.value = i - k + 1;
+        // card.kind = CardKind.club;
       }
       // this.allCards.ordering[i][i].isSee = true;
     }

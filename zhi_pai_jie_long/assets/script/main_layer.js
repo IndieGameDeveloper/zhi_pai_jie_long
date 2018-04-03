@@ -186,15 +186,31 @@ cc.Class({
     },
 
     isPointInOrderedArea: function (point, result) {
+        if (this.moveCardNodes.length != 1) {
+            return;
+        }
+        var sourceCard = this.moveCardNodes[0].getComponent('card').cardData
+        var orderedAreaY = this.ordered[0].getBoundingBox().y;
         for (var i = 0; i < this.ordered.length; ++i) {
-            if (this.ordered[i].getBoundingBox().contains(point)) {
-                result.areaCards = PlayerCardsManager.getInstance().allCards.ordered[i];             // 目标区域牌的集合
-                result.areaCardKindIndex = i;                       // 目标区域可能多组牌，对应的index
-                result.startIndex = result.areaCards.length - 1;    // 触目具体哪个组的那张牌的索引值
-                result.canLink = false;                             // 排至能否链接上；
-                result.areaCardPosKind = CardPosKind.ordered;       // 目标区域的牌的种类；
-                result.isIn = true;
-                return result;
+            var areaCard = PlayerCardsManager.getInstance().allCards.ordered[i];
+            if (point.y >= orderedAreaY) {
+                var lastIndex = areaCard.length;
+                var noTargetCard = lastIndex == 0;
+                if ((noTargetCard && sourceCard.value == 1) ||
+                    (!noTargetCard &&
+                        (sourceCard.value - areaCard[lastIndex - 1].value == 1) &&
+                        (sourceCard.kind == areaCard[lastIndex - 1].kind)
+                    )
+                ) {
+                    result.areaCards = areaCard;             // 目标区域牌的集合
+                    result.areaCardKindIndex = i;                       // 目标区域可能多组牌，对应的index
+                    result.startIndex = result.areaCards.length - 1;    // 触目具体哪个组的那张牌的索引值
+                    result.canLink = false;                             // 排至能否链接上；
+                    result.areaCardPosKind = CardPosKind.ordered;       // 目标区域的牌的种类；
+                    result.isIn = true;
+                    return result;
+
+                }
             }
         }
     },
@@ -290,7 +306,7 @@ cc.Class({
         if (cardData.posKind == CardPosKind.knowFromUnknow) {   // 移动卡牌的类型： 
 
             var result_1 = this.isPointInOrderingArea(endPos, {});  //是否移动到正在排序数组中；
-            var result_2 = this.isPointInOrderedArea(endPos, {});   //是否移动到已排好序的数组中；
+            var result_2 = this.isPointInOrderedArea(endPos, {}, this.moveCardNodes);   //是否移动到已排好序的数组中；
             var result = (result_1 && result_1.areaCards) ? result_1 : ((result_2 && result_2.areaCards) ? result_2 : result);
             if (result.areaCards) {
                 this.canLinkCardData(result, cardData, result.areaCards[result.areaCards.length - 1], result.areaCardPosKind);
@@ -299,7 +315,8 @@ cc.Class({
         } else if (cardData.posKind == CardPosKind.ordering) {   // 移动卡牌的类型:
             var startResult = this.isPointInOrderingArea(starPos, {})
             var result_1 = this.isPointInOrderingArea(endPos, {});
-            var result_2 = this.isPointInOrderedArea(endPos, {});   //是否移动到已排好序的数组中；
+            var result_2 = this.isPointInOrderedArea(endPos, {}, this.moveCardNodes);   //是否移动到已排好序的数组中；
+
             var result = (result_1 && result_1.areaCards) ? result_1 : ((result_2 && result_2.areaCards) ? result_2 : result);
             if (result.areaCards) {
                 this.canLinkCardData(result, cardData, result.areaCards[result.areaCards.length - 1], result.areaCardPosKind);
